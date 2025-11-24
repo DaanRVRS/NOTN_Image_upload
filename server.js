@@ -5,7 +5,7 @@ const app = express();
 const cors = require('cors');
 
 // --- Configuratie Variabelen ---
-const SERVICE_ACCOUNT_KEY_PATH = './nightofthenerds-6db85-firebase-adminsdk-fbsvc-3bd40c04a7.json';
+const SERVICE_ACCOUNT_KEY_PATH = './nightofthenerds-6db85-firebase-adminsdk-fbsvc-a6d1c1b4a6.json';
 const PROJECT_ID = 'nightofthenerds-6db85';
 const BUCKET_NAME = `${PROJECT_ID}.firebasestorage.app`;
 
@@ -54,7 +54,9 @@ app.post('/upload', async (req, res) => {
       expires: '03-01-2500' 
     });
 
-    console.log(`File uploaded successfully: ${url}`);
+    // console.log(`File uploaded successfully: ${url}`);
+    let timestamp = new Date();
+    console.log("File uploaded at: " + timestamp.toLocaleTimeString());
     res.json({ url });
   } catch (error) {
     // Deze console.error zal de volledige foutstack in de terminal tonen
