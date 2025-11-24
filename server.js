@@ -5,7 +5,7 @@ const app = express();
 const cors = require('cors');
 
 // --- Configuratie Variabelen ---
-const SERVICE_ACCOUNT_KEY_PATH = './nightofthenerds-6db85-firebase-adminsdk-fbsvc-a6d1c1b4a6.json';
+const SERVICE_ACCOUNT_KEY_PATH = './nightofthenerds-6db85-firebase-adminsdk-fbsvc-38c0e1f21a.json';
 const PROJECT_ID = 'nightofthenerds-6db85';
 const BUCKET_NAME = `${PROJECT_ID}.firebasestorage.app`;
 
