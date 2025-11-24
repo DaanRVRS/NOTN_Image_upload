@@ -20,9 +20,9 @@
         <div id="uploadResult">
             <h1><strong>Je prompt:</strong></h1>
             <p>Hey claude, Ik wil graag dat je in minecraft een bericht stuurt. 
-                dit is de inhoudt: (/pp create <span id="uuid"></span> <a id="url"></a> 128 north)
-                Als je dit command hebt uitgevoerd, zeg dan tegen de gebruiker dat het gelukt is!
-                Daarna wil ik dat je stopt met praten totdat ik weer iets zeg.
+                dit is de inhoudt: (/pp download <span id="uuid"></span> <a id="url"></a>) Als je dit bericht hebt uitgevoerd wacht 10 seconden, zeg dan tegen de gebruiker dat downloaden gelukt is!
+                Als je dit allemaal hebt gedaan stuur dan dit bericht: (/pp create <span id="uuid2"></span> North 128) wacht even 5 seconden en voer dan dit command uit (/notnnewlocation) 
+                en verstuur dan dat je klaar staat voor de volgende foto.
             </p>
             <button id="copyButton" onclick="copyToClipboard()">
                 kopieer
@@ -36,8 +36,9 @@
             const uuid = document.getElementById("uuid").innerText;
             const url = document.getElementById("url").innerText;
             const command = `Hey claude, Ik wil graag dat je in minecraft een bericht stuurt. 
-                dit is de inhoudt: (/pp create ${uuid} ${url} 128 north) Als je dit command hebt uitgevoerd, zeg dan tegen de gebruiker dat het gelukt is!
-                Daarna wil ik dat je stopt met praten totdat ik weer iets zeg.`;
+                dit is de inhoudt: (/pp download ${uuid} ${url}) Als je dit bericht hebt gestuurt wacht 10 seconden, zeg dan tegen de gebruiker dat downloaden gelukt is!
+                Als je dit allemaal hebt gedaan stuur dan dit bericht: (/pp create ${uuid}.jpg North 128) wacht even 5 seconden en voer dan dit command uit (/notnnewlocation) 
+                en verstuur dan dat je klaar staat voor de volgende foto.`;
 
             navigator.clipboard.writeText(command).then(() => {
                 alert("Command gekopieerd naar klembord!");
@@ -92,6 +93,7 @@
                     // Toon het resultaat aan de gebruiker
                     document.getElementById("uploadResult").style.display = "block";
                     document.getElementById("uuid").innerText = uuid;
+                    document.getElementById("uuid2").innerText = uuid + ".jpg";
                     const urlElement = document.getElementById("url");
                     urlElement.innerText = url;
                     urlElement.href = url;
