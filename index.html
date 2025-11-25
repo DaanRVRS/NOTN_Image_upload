@@ -3,112 +3,117 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hello World</title>
+    <title>Night Of The Nerds x ROC Nijmegen</title>
     <link rel="stylesheet" href="./styles/styles.css" />
     <script src="https://kit.fontawesome.com/aa0c361891.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <h1>Night Of The Nerds x ROC Nijmegen</h1>
+    <header class="navbar">
+        <div class="nav-inner">
+            <h1 class="logo">Night Of The Nerds x ROC Nijmegen</h1>
+        </div>
     </header>
-    <main>
-        <p>Upload de gemaakte foto hieronder!</p>       
-        <input type="file" name="photo" accept="image/*" required />
-        <button onclick="triggerUpload()" type="submit">Upload Foto</button>
-
-        <!-- gebruik url variabel om hier een promt te showen a.d.h.v de url -->
-        <div id="uploadResult">
+ 
+    <section class="hero">
+        <h2>Upload jouw foto hieronder</h2>
+    </section>
+ 
+    <main class="upload-section">
+        <div class="upload-card">
+            <p class="upload-title">Upload je foto en genereer je prompt</p>
+            <input type="file" name="photo" accept="image/*" required />
+            <button onclick="triggerUpload()" type="submit" class="upload-btn">Upload Foto</button>
+        </div>
+ 
+        <div id="uploadResult" class="result-card">
             <h1><strong>Je prompt:</strong></h1>
-            <p>Hey claude, Ik wil graag dat je in minecraft een bericht stuurt. 
-                dit is de inhoudt: (/pp download <span id="uuid"></span> <a id="url"></a>) Als je dit bericht hebt uitgevoerd wacht 10 seconden, zeg dan tegen de gebruiker dat downloaden gelukt is!
-                Als je dit allemaal hebt gedaan stuur dan dit bericht: (/pp create <span id="uuid2"></span> North 128) wacht even 5 seconden en voer dan dit command uit (/notnnewlocation) 
-                en verstuur dan dat je klaar staat voor de volgende foto.
+            <p>
+                Hey claude, Ik wil graag dat je in minecraft een bericht stuurt.  
+                dit is de inhoudt: (/pp download <span id="uuid"></span> <a id="url"></a>)  
+                Als je dit bericht hebt uitgevoerd, wacht 10 seconden en zeg tegen de gebruiker dat downloaden gelukt is!
+                Daarna: (/pp create <span id="uuid2"></span> North 128)  
+                Wacht 5 seconden, voer dan: (/notnnewlocation)  
+                En geef aan dat je klaar staat voor de volgende foto.
             </p>
-            <button id="copyButton" onclick="copyToClipboard()">
-                kopieer
+ 
+            <button id="copyButton" onclick="copyToClipboard()" class="copy-btn">
+                Kopieer
                 <i class="fa-regular fa-copy"></i>
             </button>
         </div>
     </main>
-
+ 
     <script>
         copyToClipboard = () => {
             const uuid = document.getElementById("uuid").innerText;
             const url = document.getElementById("url").innerText;
-            const command = `Hey claude, Ik wil graag dat je in minecraft een bericht stuurt. 
-                dit is de inhoudt: (/pp download ${uuid} ${url}) Als je dit bericht hebt gestuurt wacht 10 seconden, zeg dan tegen de gebruiker dat downloaden gelukt is!
-                Als je dit allemaal hebt gedaan stuur dan dit bericht: (/pp create ${uuid}.jpg North 128) wacht even 5 seconden en voer dan dit command uit (/notnnewlocation) 
-                en verstuur dan dat je klaar staat voor de volgende foto.`;
-
-            navigator.clipboard.writeText(command).then(() => {
-                alert("Command gekopieerd naar klembord!");
-            }).catch(err => {
-                console.error("Fout bij kopiëren naar klembord:", err);
-            });
+ 
+            const command = `Hey claude, Ik wil graag dat je in minecraft een bericht stuurt.
+                dit is de inhoudt: (/pp download ${uuid} ${url})
+                Als je dit bericht hebt gestuurt wacht 10 seconden, zeg dan dat downloaden gelukt is.
+                Daarna: (/pp create ${uuid}.jpg North 128)
+                Wacht 5 seconden en voer uit: (/notnnewlocation)
+                Daarna: klaar voor de volgende foto.`;
+ 
+            navigator.clipboard.writeText(command)
+                .then(() => alert("Command gekopieerd naar klembord!"))
+                .catch(err => console.error("Fout bij kopiëren:", err));
         }
-
+ 
         triggerUpload = async () => {
-            if (document.querySelector('input[type="file"]').files.length === 0) {
+            const fileInput = document.querySelector('input[type="file"]');
+            if (fileInput.files.length === 0) {
                 alert("Selecteer eerst een foto om te uploaden.");
                 return;
             }
-
-            const file = document.querySelector('input[type="file"]').files[0];
-            // stuur naar api
+ 
+            const file = fileInput.files[0];
             await sendFileToServer(file);
         }
-
+ 
         let url;
         let uuid;
-
+ 
         sendFileToServer = async (file) => {
             const base64 = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
+                reader.onerror = reject;
             });
-
-            // console.log(base64);
-
+ 
             uuid = crypto.randomUUID();
-
+ 
             try {
                 const response = await fetch('http://localhost:3000/upload', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        imageBase64: base64.split(',')[1], // alleen de Base64-data, niet "data:image/png;base64,..."
+                        imageBase64: base64.split(',')[1],
                         filename: uuid
                     })
                 });
-
-                if (response.ok) {
-                    // console.log(response);
-                    const data = await response.json();
-                    url = data.url;
-
-                    // Toon het resultaat aan de gebruiker
-                    document.getElementById("uploadResult").style.display = "block";
-                    document.getElementById("uuid").innerText = uuid;
-                    document.getElementById("uuid2").innerText = uuid + ".jpg";
-                    const urlElement = document.getElementById("url");
-                    urlElement.innerText = url;
-                    urlElement.href = url;
-
-                    alert("Foto succesvol geüpload!");
-                } else {
-                    alert("Er is een fout opgetreden bij het uploaden van de foto.");
-                }
+ 
+                if (!response.ok) throw new Error("Upload mislukt");
+ 
+                const data = await response.json();
+                url = data.url;
+ 
+                document.getElementById("uploadResult").style.display = "block";
+                document.getElementById("uuid").innerText = uuid;
+                document.getElementById("uuid2").innerText = uuid + ".jpg";
+ 
+                const urlElement = document.getElementById("url");
+                urlElement.innerText = url;
+                urlElement.href = url;
+ 
+                // alert("Foto succesvol geüpload!");
             } catch (error) {
-                console.error("Fout bij uploaden:", error);
-                alert("Er is een fout opgetreden bij het uploaden van de foto.");
+                // alert("Er ging iets mis bij het uploaden.");
+                console.error(error);
             }
-
-            console.log("Uploaded file URL:", url);
         }
     </script>
 </body>
 </html>
+ 
